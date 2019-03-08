@@ -11,6 +11,7 @@ package org.openmrs.module.cmrreports.web.controller;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.module.cmrreports.api.reporting.SetupPECGReport;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,11 +30,13 @@ public class CMRReportsController {
 	
 	@RequestMapping("/module/cmrreports/register_PECG")
 	public ModelAndView registerPECG() throws Exception {
+		new SetupPECGReport().setup();
 		return new ModelAndView(new RedirectView("cmrreports.form"));
 	}
 	
 	@RequestMapping("/module/cmrreports/remove_PECG")
 	public ModelAndView removePECG() throws Exception {
+		new SetupPECGReport().delete();
 		return new ModelAndView(new RedirectView("cmrreports.form"));
 	}
 	
