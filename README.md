@@ -3,7 +3,7 @@ CMR Rerports
 
 Description
 -----------
-This is a very basic module which can be used as a starting point in creating a new module.
+A bundle of reporting tools, reports and patterns that consume the [OpenMRS Reporting module](https://github.com/openmrs/openmrs-module-reporting).
 
 Building from Source
 --------------------
