@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
 import org.openmrs.Program;
 import org.openmrs.VisitType;
 import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
@@ -129,6 +130,20 @@ public class Cohorts {
 		allAgeRanges.add(PatientBetween50YearsAndAbove);
 		return allAgeRanges;
 	}
+	
+	public static SqlCohortDefinition getPatientsCurrentlyOnRegimenBasedOnEndDate(String name, Concept concept) {
+		SqlCohortDefinition patientOnRegimen = new SqlCohortDefinition();
+		
+		StringBuilder query = new StringBuilder("select distinct patient_id from orders where concept_id in (");
+		query.append(concept.getId());
+		query.append(") and voided=0 and start_date <= :endDate and (discontinued=0 or discontinued_date > :endDate)");
+		patientOnRegimen.setQuery(query.toString());
+		patientOnRegimen.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientOnRegimen.setName(name);
+		
+		return patientOnRegimen;
+	}
+	
 	
 	/*
 	 * Just to demo that you can use SQL queries for cohort definitions. You can
