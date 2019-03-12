@@ -17,11 +17,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Program;
-import org.openmrs.VisitType;
 import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.GenderCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.common.DurationUnit;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
@@ -158,19 +158,22 @@ public class Cohorts {
 	}
 	
 	
-	/*
-	 * Just to demo that you can use SQL queries for cohort definitions. You can
-	 * achieve the same here using a Program Enrollment Query and a
-	 * VisitCohortDefinition from the reporting module
-	 */
-	public static SqlCohortDefinition getPatientEnrolledInProgramWithUPECVisit(Program HIVProgram, VisitType UPECVisitType) {
-		SqlCohortDefinition patientEnrolledInProgramWithUPECVisit = new SqlCohortDefinition();
-		patientEnrolledInProgramWithUPECVisit.setName("patientWithHIVOutcomes");
-		patientEnrolledInProgramWithUPECVisit.setQuery("select v.patient_id from visit v,patient_program pp where v.visit_type_id=" + UPECVisitType.getVisitTypeId() + " and v.patient_id=pp.patient_id and pp.program_id=" + HIVProgram.getProgramId() + " and pp.voided=0 and pp.date_enrolled <= :onOrBefore" + " and (pp.date_completed >= :onOrAfter or pp.date_completed is null)" + " and v.voided=0 and v.date_started >= :onOrAfter and v.date_started <= :onOrBefore");
+	public static InProgramCohortDefinition createInProgram(String name, Program program) {
+		InProgramCohortDefinition inProgram = new InProgramCohortDefinition();
+		inProgram.setName(name);
 		
-		patientEnrolledInProgramWithUPECVisit.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-		patientEnrolledInProgramWithUPECVisit.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
-		return patientEnrolledInProgramWithUPECVisit;
+		List<Program> programs = new ArrayList<Program>();
+		programs.add(program);
+		
+		inProgram.setPrograms(programs);
+		
+		return inProgram;
+	}
+	
+	public static InProgramCohortDefinition createInProgramParameterizableByDate(String name, Program program) {
+		InProgramCohortDefinition inProgram = createInProgram(name, program);
+		inProgram.addParameter(new Parameter("onDate", "On Date", Date.class));
+		return inProgram;
 	}
 	
 }

@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Properties;
 
 import org.openmrs.Program;
-import org.openmrs.VisitType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.cmrreports.api.reporting.library.Cohorts;
 import org.openmrs.module.cmrreports.api.reporting.library.Indicators;
@@ -34,8 +33,6 @@ public class SetupPECGReport {
 	private Program HIVProgram;
 	
 	private List<Program> HIVPrograms = new ArrayList<Program>();
-	
-	private VisitType UPECVisitType;
 	
 	public void setup() throws Exception {
 		
@@ -67,7 +64,7 @@ public class SetupPECGReport {
 		rd.addParameter(new Parameter("reportingStartDate", "Start Date", Date.class));
 		rd.addParameter(new Parameter("endDate", "End Date", Date.class));
 		rd.setName("PECG Report");
-		rd.setBaseCohortDefinition(Cohorts.getPatientEnrolledInProgramWithUPECVisit(HIVProgram, UPECVisitType), ParameterizableUtil.createParameterMappings("onOrAfter=${reportingStartDate},onOrBefore=${endDate}"));
+		rd.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByDate("hiv", HIVProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 		rd.addDataSetDefinition(createBaseDataSet(), ParameterizableUtil.createParameterMappings("endDate=${endDate},reportingStartDate=${reportingStartDate}"));
 		Helper.saveReportDefinition(rd);
 		return rd;
@@ -112,7 +109,6 @@ public class SetupPECGReport {
 	private void setUpProperties() {
 		HIVProgram = Context.getProgramWorkflowService().getProgram(1);
 		HIVPrograms.add(HIVProgram);
-		UPECVisitType = Context.getVisitService().getVisitTypeByUuid("a7c2aaf0-c4e5-4310-aa94-07c7fe6a331a");
 	}
 	
 }
