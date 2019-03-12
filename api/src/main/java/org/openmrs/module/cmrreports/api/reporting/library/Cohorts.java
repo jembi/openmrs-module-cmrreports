@@ -144,6 +144,19 @@ public class Cohorts {
 		return patientOnRegimen;
 	}
 	
+	public static SqlCohortDefinition getPatientsOnRegimenBeforStartDate(String name, Concept concept) {
+		SqlCohortDefinition patientOnRegimen = new SqlCohortDefinition();
+		
+		StringBuilder query = new StringBuilder("select distinct patient_id from orders where concept_id in (");
+		query.append(concept.getId());
+		query.append(") and voided=0 and start_date <= :startDate");
+		patientOnRegimen.setQuery(query.toString());
+		patientOnRegimen.addParameter(new Parameter("startDate", "startDate", Date.class));
+		patientOnRegimen.setName(name);
+		
+		return patientOnRegimen;
+	}
+	
 	
 	/*
 	 * Just to demo that you can use SQL queries for cohort definitions. You can
